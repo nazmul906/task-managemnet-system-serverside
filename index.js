@@ -28,10 +28,18 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const taskcollection = client.db("taskmangement").collection("alltask");
+
+    // api to post toy
     app.post("/addtask", async (req, res) => {
       //   console.log(req.body);
       const addedtask = req.body;
       const result = await taskcollection.insertOne(addedtask);
+      res.send(result);
+    });
+
+    // api to get alltoy
+    app.get("/alltask", async (req, res) => {
+      const result = await taskcollection.find().toArray();
       res.send(result);
     });
 
