@@ -76,6 +76,21 @@ async function run() {
       }
     });
 
+    // api to delete task
+    app.delete("/deletetask/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("delete_id", id);
+      const query = { _id: new ObjectId(id) };
+      try {
+        const result = await taskcollection.deleteOne(query);
+        console.log(result);
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating task:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
