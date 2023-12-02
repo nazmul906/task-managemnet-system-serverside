@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 require("dotenv").config();
 // middleware
@@ -29,7 +29,7 @@ async function run() {
     await client.connect();
     const taskcollection = client.db("taskmangement").collection("alltask");
 
-    // api to post toy
+    // api to post task
     app.post("/addtask", async (req, res) => {
       //   console.log(req.body);
       const addedtask = req.body;
@@ -37,10 +37,43 @@ async function run() {
       res.send(result);
     });
 
-    // api to get alltoy
+    // api to get alltask
     app.get("/alltask", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
       const result = await taskcollection.find().toArray();
       res.send(result);
+    });
+
+    // api to update task
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      // console.log("update", id);
+
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatetask = req.body;
+      console.log(updatetask);
+      const updateDoc = {
+        $set: {
+          title: updatetask.title,
+          description: updatetask.description,
+          status: updatetask.status,
+        },
+      };
+
+      try {
+        const result = await taskcollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        // console.log(result);
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating task:", error);
+        res.status(500).send("Internal Server Error");
+      }
     });
 
     // Send a ping to confirm a successful connection
