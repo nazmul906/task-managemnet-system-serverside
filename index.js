@@ -6,6 +6,7 @@ const app = express();
 require("dotenv").config();
 // middleware
 app.use(cors());
+
 app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Task Management");
@@ -83,7 +84,7 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       try {
         const result = await taskcollection.deleteOne(query);
-        console.log(result);
+        // console.log(result);
         res.send(result);
       } catch (error) {
         console.error("Error updating task:", error);
